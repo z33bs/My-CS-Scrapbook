@@ -1,5 +1,5 @@
 # Unit-Test-Helpers
-A collection of Helpers that make unit testing easier / more effective. Note, example code uses Xunit mostly.,
+A collection of Helpers that make unit testing easier / more effective. Note, example code uses Xunit mostly.
 
 ## Testing IDisposable
 From https://www.inversionofcontrol.co.uk/unit-testing-finalizers-in-csharp/
@@ -65,3 +65,44 @@ Let's look at what is going on here in detail:
 - `GC.WaitForPendingFinalizers();` - Block until the GC has finished processing the finalizer queue for collected objects
 
 With this general pattern of weak references, delegated actions, GC collection and finalization, we can test our finalizer code deterministically.
+
+## DeterministicTaskScheduler
+From [Sven Grand's Article](https://docs.microsoft.com/en-us/archive/msdn-magazine/2014/november/async-programming-unit-testing-asynchronous-code-three-solutions-for-better-tests)
+To test async code, allowing you to step through the tasks programatically (deterministically) in your test code. Not that this requres the tested method to accept a TaskScheduler so that you can test with this user-specified scheduler. Example of use is:
+```c#
+[Theory]
+[InlineData(500)]
+[InlineData(0)]
+public void AsyncCommand_ExecuteAsync_IntParameter_Test(int parameter)
+{
+    //Arrange
+    var dts = new DeterministicTaskScheduler();
+
+    ICommand command = new SafeCommand<int>(IntParameterTask,dts,null,null);
+
+    //Act
+    command.Execute(parameter);
+    dts.RunTasksUntilIdle();
+
+    //Assert
+
+}
+
+```
+
+The method overload looks like:
+```c#
+/// <summary>
+/// For Unit Testing. Command runs using the specified <see cref="TaskScheduler"/>
+/// </summary>
+[EditorBrowsable(EditorBrowsableState.Never)]
+public SafeCommand(
+    Func<T, Task> executeFunction,
+    TaskScheduler scheduler,
+    IViewModelBase viewModel = null,
+    Action<Exception> onException = null,
+    Func<T, bool> canExecute = null,
+    //bool mustRunOnCurrentSyncContext is moot
+    bool isBlocking = true
+    )
+```
