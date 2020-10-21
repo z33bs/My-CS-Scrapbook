@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ZenMvvm.Tests
+namespace UnitTestHelpers
 {
     /// <summary>
     /// A TaskScheduler to be used for unit testing. 
