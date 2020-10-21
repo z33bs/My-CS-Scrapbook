@@ -67,8 +67,11 @@ Let's look at what is going on here in detail:
 With this general pattern of weak references, delegated actions, GC collection and finalization, we can test our finalizer code deterministically.
 
 ## DeterministicTaskScheduler
-From [Sven Grand's Article](https://docs.microsoft.com/en-us/archive/msdn-magazine/2014/november/async-programming-unit-testing-asynchronous-code-three-solutions-for-better-tests)
-To test async code, allowing you to step through the tasks programatically (deterministically) in your test code. Not that this requres the tested method to accept a TaskScheduler so that you can test with this user-specified scheduler. Example of use is:
+To test async code.
+
+From [Sven Grand's Article](https://docs.microsoft.com/en-us/archive/msdn-magazine/2014/november/async-programming-unit-testing-asynchronous-code-three-solutions-for-better-tests). Solution is an alternative to simply adding the line `Thread.Sleep(WAITING_TIME_FOR_ASYNC_MS);` before Assert.
+
+This solution allows you to step through the tasks programatically (deterministically) in your test code. Not that this requres the tested method to accept a TaskScheduler so that you can test with this user-specified scheduler. Example of use is:
 ```c#
 [Theory]
 [InlineData(500)]
