@@ -1,5 +1,5 @@
 
-So the issue with Command binding within the collectionview is that the binding context is the element itself, not the viewmodel. 
+So the issue with Command binding within the collectionview is that the binding context is the element itself (not sure if this is entirely accurate), not the viewmodel. 
 So in the example below, each Item will be the binding context. To bind to a command in the ViewModel, you need to get its path. Two ways to do this:
 1) Name the CollectionView. Then bind to it's BindingContext (which will be the ViewModel).
 
@@ -31,4 +31,15 @@ or 2) Use AncestorType and select the ViewModel type
   Source={RelativeSource AncestorType={x:Type vm:ItemsViewModel}}
   , Path=OnItemSelectedCommand}" 
   CommandParameter="{Binding .}"/>
+```
+
+A similar approach is used when binding `Comand` and `CommandParameter`. Note that we need to specify the source for `CommandParameter` too.
+```xaml
+<CollectionView x:Name="DogsCollection"
+	    Margin="20"
+	    ItemsSource="{x:Static data:DogData.Dogs}"
+	    ItemTemplate="{StaticResource AnimalTemplate}"
+	    SelectionMode="Single"
+	    SelectionChangedCommand="{Binding BindingContext.SelectionChangedCommand, Source={x:Reference Name=DogsCollection}}"
+	    SelectionChangedCommandParameter="{Binding SelectedItem, Source={x:Reference Name=DogsCollection}}"/>        
 ```
